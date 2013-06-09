@@ -22,9 +22,18 @@
  * the PSEUDO_EOF character.
  */
 Map<ext_char, int> getFrequencyTable(istream& file) {
-	// TODO: Implement this!
+    
+	Map<ext_char, int> result;
+    
+    char ch;
+    while(file.get(ch)) {
+        result[ch]++;
+    }
 	
-	return Map<ext_char, int>();	
+    result[PSEUDO_EOF] = 1;
+    
+	return result;
+    
 }
 
 /* Function: buildEncodingTree
