@@ -11,6 +11,7 @@
 #define HuffmanEncoding_Included
 
 #include "HuffmanTypes.h"
+#include "pqueue.h"
 #include "map.h"
 #include "bstream.h"
 
