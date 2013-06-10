@@ -114,6 +114,14 @@ void recMakeEncodingMap(Map<ext_char, string>& encodingMap, Node* node, string p
  */
 void decodeFile(ibstream& infile, Node* encodingTree, ostream& file);
 
+/* Function: recMakeDecodingMap
+ * Usage: recMakeDecodingMap(decodingMap, encodingTree, prefix);
+ * --------------------------------------------------------
+ * A recursive function that takes a Huffman-style tree and
+ * converts it to a map from encodings to their charaters.
+ * Works exactly like recMakeEncodingMap, except that final
+ * map in this case is from prefixes to characters.
+ */
 void recMakeDecodingMap(Map<string, ext_char>& decodingMap, Node* node, string prefix);
 
 /* Function: writeFileHeader

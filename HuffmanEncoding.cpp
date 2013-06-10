@@ -195,34 +195,35 @@ void recMakeEncodingMap(Map<ext_char, string>& encodingMap, Node* node, string p
  *   - The output file is open and ready for writing.
  */
 void decodeFile(ibstream& infile, Node* encodingTree, ostream& file) {
-	// first make decoding map
+
     Map<string, ext_char> decodingMap;
     string prefix = "";
     recMakeDecodingMap(decodingMap, encodingTree, prefix);
-    // cout << "Decoding map completed:" << endl;
-    // cout <<  decodingMap << endl;
     
-    // then write from codes in infile to outfile
     string curr = "";
     while (true) {
+        
         int bit = infile.readBit();
-        // cout << "Reading bit " << bit << endl;
         curr += integerToString(bit);
-        // cout << "Attempting to decode:" << endl;
-        // cout << curr << endl;
         
         if (decodingMap.containsKey(curr)) {
             ext_char ch = decodingMap[curr];
-            if (ch == PSEUDO_EOF) {
-                break;
-            }
-            // cout << "Writing character " << ch << endl;
+            if (ch == PSEUDO_EOF) break;
             file.put(ch);
             curr = "";
         }
     }
+    
 }
 
+/* Function: recMakeDecodingMap
+ * Usage: recMakeDecodingMap(decodingMap, encodingTree, prefix);
+ * --------------------------------------------------------
+ * A recursive function that takes a Huffman-style tree and
+ * converts it to a map from encodings to their charaters.
+ * Works exactly like recMakeEncodingMap, except that final
+ * map in this case is from prefixes to characters.
+ */
 void recMakeDecodingMap(Map<string, ext_char>& decodingMap, Node* node, string prefix) {
     if (node->one != NULL) {
         string prefix_one = prefix + "1";
