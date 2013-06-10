@@ -71,6 +71,8 @@ void freeTree(Node* root);
  */
 void encodeFile(istream& infile, Node* encodingTree, obstream& outfile);
 
+void recMakeEncodingMap(Map<ext_char, string>& encodingMap, Node* node, string prefix);
+
 /* Function: decodeFile
  * Usage: decodeFile(encodedFile, encodingTree, resultFile);
  * --------------------------------------------------------
@@ -84,6 +86,8 @@ void encodeFile(istream& infile, Node* encodingTree, obstream& outfile);
  *   - The output file is open and ready for writing.
  */
 void decodeFile(ibstream& infile, Node* encodingTree, ostream& file);
+
+void recMakeDecodingMap(Map<string, ext_char>& decodingMap, Node* node, string prefix);
 
 /* Function: writeFileHeader
  * Usage: writeFileHeader(output, frequencies);

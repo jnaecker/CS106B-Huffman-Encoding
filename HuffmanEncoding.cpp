@@ -8,6 +8,8 @@
 
 #include "HuffmanEncoding.h"
 #include "pqueue.h"
+#include <string>
+#include "strlib.h"
 
 /* Function: getFrequencyTable
  * Usage: Map<ext_char, int> freq = getFrequencyTable(file);
@@ -121,7 +123,51 @@ void freeTree(Node* root) {
  *     without seeking the file anywhere.
  */ 
 void encodeFile(istream& infile, Node* encodingTree, obstream& outfile) {
-	// TODO: Implement this!
+	// first make character to encoding map
+    Map<ext_char, string> encodingMap;
+    string prefix = "";
+    recMakeEncodingMap(encodingMap, encodingTree, prefix);
+    // cout << "Encoding map completed:" << endl;
+    // cout <<  encodingMap << endl;
+    
+    // then process infile and write bits to outfile
+    char ch;
+    string code;
+    while(infile.get(ch)) {
+        // cout << "Processing character " << ch << endl;
+        code = encodingMap[ch];
+        // cout << "Writing code " << code << endl;
+        for (int i = 0; i < code.length(); i++) {
+            int num = (code[i] == '0') ? 0 : 1;
+            // cout << "Writing bit " << num << " to file." << endl;
+            outfile.writeBit(num);
+        }
+    }
+    
+    // Need to write EOF!
+    code = encodingMap[PSEUDO_EOF];
+    // cout << "Writing code " << code << endl;
+    for (int i = 0; i < code.length(); i++) {
+        int num = (code[i] == '0') ? 0 : 1;
+        // cout << "Writing bit " << num << " to file." << endl;
+        outfile.writeBit(num);
+    }
+    
+}
+
+void recMakeEncodingMap(Map<ext_char, string>& encodingMap, Node* node, string prefix) {
+    if (node->one != NULL) {
+        string prefix_one = prefix + "1";
+        recMakeEncodingMap(encodingMap, node->one, prefix_one);
+    }
+    if (node->zero != NULL) {
+        string prefix_zero = prefix + "0";
+        recMakeEncodingMap(encodingMap, node->zero, prefix_zero);
+    }
+    if (node->character != NOT_A_CHAR) {
+        encodingMap[node->character] = prefix;
+    }
+
 }
 
 /* Function: decodeFile
@@ -137,7 +183,46 @@ void encodeFile(istream& infile, Node* encodingTree, obstream& outfile) {
  *   - The output file is open and ready for writing.
  */
 void decodeFile(ibstream& infile, Node* encodingTree, ostream& file) {
-	// TODO: Implement this!
+	// first make decoding map
+    Map<string, ext_char> decodingMap;
+    string prefix = "";
+    recMakeDecodingMap(decodingMap, encodingTree, prefix);
+    // cout << "Decoding map completed:" << endl;
+    // cout <<  decodingMap << endl;
+    
+    // then write from codes in infile to outfile
+    string curr = "";
+    while (true) {
+        int bit = infile.readBit();
+        // cout << "Reading bit " << bit << endl;
+        curr += integerToString(bit);
+        // cout << "Attempting to decode:" << endl;
+        // cout << curr << endl;
+        
+        if (decodingMap.containsKey(curr)) {
+            ext_char ch = decodingMap[curr];
+            if (ch == PSEUDO_EOF) {
+                break;
+            }
+            // cout << "Writing character " << ch << endl;
+            file.put(ch);
+            curr = "";
+        }
+    }
+}
+
+void recMakeDecodingMap(Map<string, ext_char>& decodingMap, Node* node, string prefix) {
+    if (node->one != NULL) {
+        string prefix_one = prefix + "1";
+        recMakeDecodingMap(decodingMap, node->one, prefix_one);
+    }
+    if (node->zero != NULL) {
+        string prefix_zero = prefix + "0";
+        recMakeDecodingMap(decodingMap, node->zero, prefix_zero);
+    }
+    if (node->character != NOT_A_CHAR) {
+            decodingMap[prefix] = node->character;
+    }
 }
 
 /* Function: writeFileHeader
