@@ -129,38 +129,44 @@ void freeTree(Node* root) {
  *     without seeking the file anywhere.
  */ 
 void encodeFile(istream& infile, Node* encodingTree, obstream& outfile) {
-	// first make character to encoding map
+
     Map<ext_char, string> encodingMap;
     string prefix = "";
     recMakeEncodingMap(encodingMap, encodingTree, prefix);
-    // cout << "Encoding map completed:" << endl;
-    // cout <<  encodingMap << endl;
-    
-    // then process infile and write bits to outfile
+
     char ch;
     string code;
     while(infile.get(ch)) {
-        // cout << "Processing character " << ch << endl;
-        code = encodingMap[ch];
-        // cout << "Writing code " << code << endl;
-        for (int i = 0; i < code.length(); i++) {
-            int num = (code[i] == '0') ? 0 : 1;
-            // cout << "Writing bit " << num << " to file." << endl;
-            outfile.writeBit(num);
-        }
+        writeBitsTo(outfile, encodingMap[ch]);
     }
     
-    // Need to write EOF!
-    code = encodingMap[PSEUDO_EOF];
-    // cout << "Writing code " << code << endl;
-    for (int i = 0; i < code.length(); i++) {
-        int num = (code[i] == '0') ? 0 : 1;
-        // cout << "Writing bit " << num << " to file." << endl;
-        outfile.writeBit(num);
-    }
+    writeBitsTo(outfile, encodingMap[PSEUDO_EOF]);
     
 }
 
+/* Function: writeBitsTo
+ * Usage: writeBitsTo(outfile, encodingMap[ch]);
+ * --------------------------------------------------------
+ * Helper function that writes a string of 0's and 1's
+ * to an obstream.
+ */
+void writeBitsTo(obstream& outfile, string code) {
+    for (int i = 0; i < code.length(); i++) {
+        int num = (code[i] == '0') ? 0 : 1;
+        outfile.writeBit(num);
+    }
+}
+
+/* Function: recMakeEncodingMap
+ * Usage: recMakeEncodingMap(encodingMap, encodingTree, prefix);
+ * --------------------------------------------------------
+ * A recursive function that takes a Huffman-style tree and 
+ * converts it to a map from characters to their 0-1 encodings.
+ * Base case: if ext_char in this not is a true char or EOF,
+ * its 0-1 encoding is recording in the map.  Recursive step: 
+ * left and right branches (if they exist) are mapped by appending
+ * 1 and 0 (respectively) to prefix so far.
+ */
 void recMakeEncodingMap(Map<ext_char, string>& encodingMap, Node* node, string prefix) {
     if (node->one != NULL) {
         string prefix_one = prefix + "1";
@@ -176,7 +182,7 @@ void recMakeEncodingMap(Map<ext_char, string>& encodingMap, Node* node, string p
 
 }
 
-/* Function: decodeFile
+/* Function : decodeFile
  * Usage: decodeFile(encodedFile, encodingTree, resultFile);
  * --------------------------------------------------------
  * Decodes a file that has previously been encoded using the

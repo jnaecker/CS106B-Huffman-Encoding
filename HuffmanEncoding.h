@@ -80,6 +80,24 @@ void freeTree(Node* root);
  */
 void encodeFile(istream& infile, Node* encodingTree, obstream& outfile);
 
+/* Function: writeBitsTo
+ * Usage: writeBitsTo(outfile, encodingMap[ch]);
+ * --------------------------------------------------------
+ * Helper function that writes a string of 0's and 1's
+ * to an obstream.
+ */
+void writeBitsTo(obstream& outfile, string code);
+
+/* Function: recMakeEncodingMap
+ * Usage: recMakeEncodingMap(encodingMap, encodingTree, prefix);
+ * --------------------------------------------------------
+ * A recursive function that takes a Huffman-style tree and
+ * converts it to a map from characters to their 0-1 encodings.
+ * Base case: if ext_char in this not is a true char or EOF,
+ * its 0-1 encoding is recording in the map.  Recursive step:
+ * left and right branches (if they exist) are mapped by appending
+ * 1 and 0 (respectively) to prefix so far.
+ */
 void recMakeEncodingMap(Map<ext_char, string>& encodingMap, Node* node, string prefix);
 
 /* Function: decodeFile
