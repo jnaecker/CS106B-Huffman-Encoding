@@ -43,6 +43,15 @@ Map<ext_char, int> getFrequencyTable(istream& file);
  */
 Node* buildEncodingTree(Map<ext_char, int>& frequencies);
 
+/* Function: makeTree
+ * Usage: makeTree(pq);
+ * --------------------------------------------------------
+ * Takes in a priority queue of node*'s and puts them into
+ * a Huffman-style tree.  Upon completion the head of the
+ * tree is the only element in the pqueue.
+ */
+void makeTree(PriorityQueue<Node*>&);
+
 /* Function: freeTree
  * Usage: freeTree(encodingTree);
  * --------------------------------------------------------

@@ -52,7 +52,6 @@ Map<ext_char, int> getFrequencyTable(istream& file) {
  */
 Node* buildEncodingTree(Map<ext_char, int>& frequencies) {
 	
-    // first put each character into node and then into pq
 	PriorityQueue<Node*> pq;
     
     foreach(ext_char ch in frequencies) {
@@ -61,13 +60,23 @@ Node* buildEncodingTree(Map<ext_char, int>& frequencies) {
         node->weight = frequencies[ch];
         node->zero = NULL;
         node->one = NULL;
-        
         pq.enqueue(node, node->weight);
     }
-    
-    //then take items out of queue to build tree
 
-	while (pq.size() > 1) {
+    makeTree(pq);
+    return pq.dequeue();
+}
+
+/* Function: makeTree
+ * Usage: makeTree(pq);
+ * --------------------------------------------------------
+ * Takes in a priority queue of node*'s and puts them into
+ * a Huffman-style tree.  Upon completion the head of the 
+ * tree is the only element in the pqueue.
+ */
+void makeTree(PriorityQueue<Node*>& pq) {
+    
+    while (pq.size() > 1) {
         
         Node* right = pq.dequeue();
         
@@ -81,12 +90,8 @@ Node* buildEncodingTree(Map<ext_char, int>& frequencies) {
         parent->one = right;
         parent->zero = left;
         parent->weight = right->weight + left->weight;
-        
         pq.enqueue(parent, parent->weight);
     }
-    
-    //cout << pq.peek() << endl;
-    return pq.dequeue();
 }
 
 /* Function: freeTree
